@@ -115,6 +115,7 @@ const LendState = (props) => {
     }
   };
 
+  
   const getUserAssets = async () => {
     console.log("2. Getting Assets to supply...");
     try {
@@ -122,7 +123,7 @@ const LendState = (props) => {
         tokensList.token.map(async (token) => {
           let tok;
 
-          if (token.name != "WBTC") {
+          if (token.name != "ETH") {
             // TODO : getContract()
             // 2. Toke
             const tokenContract = new ethers.Contract(
@@ -201,7 +202,7 @@ const LendState = (props) => {
     const contract = new ethers.Contract(
       address,
       abi.abi,
-      metamaskDetails.signer
+      metamaskDetails.provider
     );
     return contract;
   };
@@ -352,7 +353,7 @@ const LendState = (props) => {
         ...assets.find((item) => item.token === assetObj.address && item),
         ...assetObj,
       }));
-    console.log(result);
+    // console.log(result);
     return result;
   };
 
@@ -372,7 +373,7 @@ const LendState = (props) => {
       const amountInUSD =
         Number(await contract.getAmountInUSD(address, AMOUNT)) / 1e18;
 
-      console.log("amountInUSD : " + amountInUSD);
+      // console.log("amountInUSD : " + amountInUSD);
       return amountInUSD;
     } catch (error) {
       reportError(error);
@@ -531,15 +532,10 @@ const LendState = (props) => {
   const getYourBorrows = async () => {
     console.log("4. Getting Your Borrows");
     try {
-      // const contract = await getContract(LendingPoolAddress, LendingPoolABI);
-      // const contract = await getContract(LendingPoolAddress, LendingPoolABI);
-      const contract = new ethers.Contract(
-        LendingPoolAddress,
-        LendingPoolABI.abi,
-        metamaskDetails.provider
-      );
-      console.log(contract)
-      const yourBorrows = await contract.connect(metamaskDetails.signer).getBorrowerAssets(metamaskDetails.currentAccount);
+      const contract = await getContract(LendingPoolAddress, LendingPoolABI);
+      const yourBorrows = await contract
+        .connect(metamaskDetails.signer)
+        .getBorrowerAssets(metamaskDetails.currentAccount);
 
       // console.log("*** calling objectifyBorrowedAssets from getYourBorrows");
       const yourBorrowsObject = await objectifyBorrowedAssets(yourBorrows);

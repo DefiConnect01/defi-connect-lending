@@ -63,9 +63,9 @@ contract LendingHelper {
     * @returns: uint price
     */
     function getCurrentTokenPrice(address _tokenAddress) public view returns (uint) {
-        AggregatorV3Interface priceFeed = AggregatorV3Interface(addressToTokenMap.getPriceFeedMap(_tokenAddress));
-        (, int price, , , ) = priceFeed.latestRoundData();
-        uint8 decimal = priceFeed.decimals();
+        // AggregatorV3Interface priceFeed = AggregatorV3Interface(addressToTokenMap.getPriceFeedMap(_tokenAddress));
+        // (, int price, , , ) = priceFeed.latestRoundData();
+        // uint8 decimal = priceFeed.decimals();
       
         // --------------------------------------------------
         bytes32 symbol = getKeccackHash(addressToTokenMap.getSymbol(_tokenAddress));
