@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import LendContext from "./lendContext";
 import { ethers } from "ethers";
-const tokensList = require("../token-list-goerli");
+const {tokensList} = require("../token-list-goerli");
 
 // TODO : uncomment for sepolia
 const TokenABI = require("../abis/DAIToken.json");
@@ -40,6 +40,11 @@ const LendState = (props) => {
   const [supplyAssets, setSupplyAssets] = useState([]);
   const [assetsToBorrow, setAssetsToBorrow] = useState([]);
   const [yourBorrows, setYourBorrows] = useState([]);
+  // const [nameOfNetwork, setNameOfNetwork] = useState('');
+  const [networkName, setNetworkName] = useState('');
+  
+  // console.log(nameOfNetwork,'nameOfNetwork networl connect chain id')
+  console.log(networkName,' networkName')
 
   //  contract details setting
   const [contract, setContract] = useState({
@@ -78,14 +83,18 @@ const LendState = (props) => {
 
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const network = await provider.getNetwork();
-      const networkName = network.chainId;
+      // const networkName = network.chainId;
+      setNetworkName(network.chainId)
       let nameOfNetwork;
       if(networkName == 728696 ) {
-        nameOfNetwork = "ONLY";
+        nameOfNetwork = "ONLY"; //?
+        // setNameOfNetwork("ONLY")
       }else if(networkName == 66665) {
-        nameOfNetwork = "CETH";
+        nameOfNetwork = "CETH";//?
+        // setNameOfNetwork("CETH")
       }else if(networkName == 200810) {
-        nameOfNetwork = "BTC";
+        nameOfNetwork = "BTC"; //?
+        // setNameOfNetwork("BTC")
       } else {
         console.log("no network name");
       }
@@ -103,7 +112,7 @@ const LendState = (props) => {
           networkName: networkName,
           signer: signer,
           currentAccount: currentAddress,
-          nameOfNetwork: nameOfNetwork
+          nameOfNetwork: nameOfNetwork 
         });
         console.log("Connected to wallet....");
       } else {
@@ -120,7 +129,7 @@ const LendState = (props) => {
     console.log("2. Getting Assets to supply...");
     try {
       const assets = await Promise.all(
-        tokensList.token.map(async (token) => {
+        tokensList(networkName).map(async (token) => {
           let tok;
 
           if (token.name != "ETH") {
@@ -222,7 +231,7 @@ const LendState = (props) => {
       const contract = await getContract(tokenAddress, TokenABI);
       const transaction = await contract
         .connect(metamaskDetails.signer)
-        .approve(LendingPoolAddress, amount);
+        .approve(LendingPoolAddress[networkName], amount);
       await transaction.wait();
       console.log("Token Approved....");
       return { status: 200, message: "Transaction Successful..." };
@@ -240,10 +249,10 @@ const LendState = (props) => {
       console.warn(
         "***Lending token : " + token + "| supplyAmount : " + supplyAmount
       );
-      const contract = await getContract(LendingPoolAddress, LendingPoolABI);
+      const contract = await getContract(LendingPoolAddress[networkName], LendingPoolABI);
       console.log(contract);
       let transaction;
-      if (token == ETHAddress) {
+      if (token == ETHAddress[66665] || token == ETHAddress[200810]) {
         transaction = await contract
           .connect(metamaskDetails.signer)
           .lend(token, amount, valueOption);
@@ -270,7 +279,7 @@ const LendState = (props) => {
           "| withdrawAmount : " +
           withdrawAmount
       );
-      const contract = await getContract(LendingPoolAddress, LendingPoolABI);
+      const contract = await getContract(LendingPoolAddress[networkName], LendingPoolABI);
       const transaction = await contract
         .connect(metamaskDetails.signer)
         .withdraw(tokenAddress, amount);
@@ -344,6 +353,7 @@ const LendState = (props) => {
     // console.log("*** In mergeObjectifiedAssets....");
     //  console.log(assets);
     var result = tokensList.token
+    // var result = tokensList.token
       .filter((tokenList) => {
         return assets.some((assetList) => {
           return tokenList.address == assetList.token;
@@ -366,7 +376,7 @@ const LendState = (props) => {
     try {
       const AMOUNT = numberToEthers(amount);
       const contract = new ethers.Contract(
-        LendingHelperAddress,
+        LendingHelperAddress[networkName],
         LendingHelperABI.abi,
         metamaskDetails.provider
       );
@@ -384,7 +394,7 @@ const LendState = (props) => {
   const getUserTotalAvailableBalance = async () => {
     try {
       const contract = new ethers.Contract(
-        LendingPoolAddress,
+        LendingPoolAddress[networkName],
         LendingPoolABI.abi,
         metamaskDetails.provider
       );
@@ -403,7 +413,7 @@ const LendState = (props) => {
   const getTokensPerUSDAmount = async (token, amount) => {
     try {
       const contract = new ethers.Contract(
-        LendingHelperAddress,
+        LendingHelperAddress[networkName],
         LendingHelperABI.abi,
         metamaskDetails.provider
       );
@@ -424,7 +434,7 @@ const LendState = (props) => {
 
     try {
       const contract = new ethers.Contract(
-        LendingPoolAddress,
+        LendingPoolAddress[networkName],
         LendingPoolABI.abi,
         metamaskDetails.provider
       );
@@ -475,10 +485,10 @@ const LendState = (props) => {
   /************ Function to get Assets to Borrow ***********/
   const getAssetsToBorrow = async () => {
     console.log("4. Getting assets to Borrow...");
-
+    // 0x2b146a5A1AF77dBCCFC71CC26e2169c81fE0703b
     try {
       const contract = new ethers.Contract(
-        LendingPoolAddress,
+        LendingPoolAddress[networkName],
         LendingPoolABI.abi,
         metamaskDetails.provider
       );
@@ -514,7 +524,7 @@ const LendState = (props) => {
       console.log(
         "***Borrowing token : " + token + "| borrowAmount : " + borrowAmount
       );
-      const contract = await getContract(LendingPoolAddress, LendingPoolABI);
+      const contract = await getContract(LendingPoolAddress[networkName], LendingPoolABI);
       const transaction = await contract
         .connect(metamaskDetails.signer)
         .borrow(token, amount);
@@ -532,7 +542,7 @@ const LendState = (props) => {
   const getYourBorrows = async () => {
     console.log("4. Getting Your Borrows");
     try {
-      const contract = await getContract(LendingPoolAddress, LendingPoolABI);
+      const contract = await getContract(LendingPoolAddress[networkName], LendingPoolABI);
       const yourBorrows = await contract
         .connect(metamaskDetails.signer)
         .getBorrowerAssets(metamaskDetails.currentAccount);
@@ -584,7 +594,7 @@ const LendState = (props) => {
           repayAmount
       );
 
-      const contract = await getContract(LendingPoolAddress, LendingPoolABI);
+      const contract = await getContract(LendingPoolAddress[networkName], LendingPoolABI);
       const transaction = await contract
         .connect(metamaskDetails.signer)
         .repay(tokenAddress, amount);
@@ -623,7 +633,8 @@ const LendState = (props) => {
     }
   };
 
-  // ------------------
+  // ------------------ 
+  //! why this error line
   const reportError = (error) => {
     console.error(JSON.stringify(error));
   };

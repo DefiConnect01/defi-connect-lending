@@ -1,4 +1,4 @@
-import { ethIcon, usdcIcon, daiIcon, usdtIcon, btcIcon} from "./assets";
+import { ethIcon, usdcIcon, daiIcon, usdtIcon, btcIcon } from "./assets";
 
 // For localhost
 import {
@@ -6,52 +6,51 @@ import {
   DDAITokenAddress,
   DUSDTTokenAddress,
   DUSDCTokenAddress,
-  DWBTCTokenAddress
-
+  DWBTCTokenAddress,
 } from "./addresses";
 
-export const token = [
-  
-  {
-    image: btcIcon,
-    name: "BTC",
-    address: DWBTCTokenAddress,
-    decimal: "18",
-    apy: 3,
-    isCollateral: true,
-  },
-  {
-    image: daiIcon,
-    name: "DAI",
-    address: DDAITokenAddress,
-    decimal: "18",
-    apy: 3,
-    isCollateral: true,
-  },
-  {
-    image: usdcIcon,
-    name: "USDC",
-    address: DUSDCTokenAddress,
-    decimal: "18",
-    apy: 3,
-    isCollateral: true,
-  },
-  {
-    image: usdtIcon,
-    name: "USDT",
-    address: DUSDTTokenAddress,
-    decimal: "18",
-    apy: 3,
-    isCollateral: true,
-  },
-  
-  {
-    image: btcIcon,
-    name: "WBTC",
-    address: ETHAddress,
-    decimal: "18",
-    apy: 3,
-    isCollateral: true,
-  },
-  
-];
+export const tokensList = (chainId) => {
+  return [
+    {
+      image: btcIcon,
+      name: "BTC",
+      address: DWBTCTokenAddress[chainId],
+      decimal: "18",
+      apy: 3,
+      isCollateral: true,
+    },
+    {
+      image: daiIcon,
+      name: "DAI",
+      address: DDAITokenAddress[chainId],
+      decimal: "18",
+      apy: 3,
+      isCollateral: true,
+    },
+    {
+      image: usdcIcon,
+      name: "USDC",
+      address: DUSDCTokenAddress[chainId],
+      decimal: "18",
+      apy: 3,
+      isCollateral: true,
+    },
+    {
+      image: usdtIcon,
+      name: "USDT",
+      address: DUSDTTokenAddress[chainId],
+      decimal: "18",
+      apy: 3,
+      isCollateral: true,
+    },
+
+    {
+      image: btcIcon,
+      name: "WBTC",
+      address: ETHAddress[chainId],
+      decimal: "18",
+      apy: 3,
+      isCollateral: true,
+    },
+  ];
+};
